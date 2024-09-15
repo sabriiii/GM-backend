@@ -1,9 +1,18 @@
-
-
+const { updateData, writeData } = require("../config/firebase")
+const {generateId} = require("../utils/uuid")
 
 exports.createArticle = async (req, res) => {
     try{
-        res.json("added")
+        let id = generateId()
+        // add PDF to firebase storage
+        writeData("articles", id , req.body)
+        res.json({
+            message: "added",
+            data: {
+                ...req.body,
+                id
+            }
+        })
     }
     catch(err){
         console.error(err)

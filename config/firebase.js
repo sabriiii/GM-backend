@@ -41,3 +41,7 @@ exports.getData = (collection, Id) => {
         console.log("Error getting document:", error);
     });
 }
+
+exports.updateData = (collection, Id, data) => {
+    setDoc(doc(database, collection, Id), data, { merge: true });
+}
