@@ -1,6 +1,6 @@
 
 
-exports.getListDoctor = async (req, res) => {
+exports.getListDoctors = async (req, res) => {
     try{
         res.json("added")
     }

@@ -1,7 +1,4 @@
 const {initializeApp} = require("firebase/app");
-const {getDatabase} = require("firebase/database");
-const { getFirestore } = require("firebase/firestore");
-const { doc, setDoc, deleteDoc, getDoc } = require("firebase/firestore"); 
 
 const firebaseConfig = {
     apiKey: "AIzaSyDqm_tpcrahvU-wg6iHRMQ2B5K3XvWTRFs",
@@ -14,34 +11,4 @@ const firebaseConfig = {
     measurementId: "G-C4HPX1B6N9"
   };
 
-const app = initializeApp(firebaseConfig);
-
-const database = getFirestore(app);
-
-exports.writeData = (collection, Id, data) => {
-    setDoc(doc(database, collection, Id), data);
-}
-
-exports.deleteData = (collection, Id) => {
-    deleteDoc(doc(database, collection, Id));
-}
-
-exports.getData = (collection, Id) => {
-    const docRef = doc(database, collection, Id);
-    getDoc(docRef)
-    .then((docSnap) => {
-        if (docSnap.exists()) {
-            console.log("Document data:", docSnap.data());
-        } else {
-            // doc.data() will be undefined in this case
-            console.log("No such document!");
-        }
-    })
-    .catch((error) => {
-        console.log("Error getting document:", error);
-    });
-}
-
-exports.updateData = (collection, Id, data) => {
-    setDoc(doc(database, collection, Id), data, { merge: true });
-}
+exports.app = initializeApp(firebaseConfig);

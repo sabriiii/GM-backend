@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const authRouter = require('../controllers/auth.controller');
+const multer = require('multer');
+const articleController = require('../controllers/articles.controller');
 
-router.get('/login', authRouter.Login);
+const upload = multer({ storage: multer.memoryStorage() })
+
+router.post('/', upload.single('filename') ,articleController.createArticle);
+router.get('/' ,articleController.getListArticles);
+router.get('/:id' ,articleController.getArticleById);
 
 module.exports = router;

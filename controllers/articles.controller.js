@@ -1,16 +1,19 @@
-const { updateData, writeData } = require("../config/firebase")
+const { writeData, getData, getDataById } = require("../config/firestore")
 const {generateId} = require("../utils/uuid")
+const { uploadStorage } = require("../config/storage")
 
 exports.createArticle = async (req, res) => {
     try{
+        // verify all fields are present
         let id = generateId()
-        // add PDF to firebase storage
+        let downloadUrl = await uploadStorage(req.file)
         writeData("articles", id , req.body)
         res.json({
-            message: "added",
+            message: "added article",
             data: {
                 ...req.body,
-                id
+                id,
+                url: downloadUrl
             }
         })
     }
@@ -23,7 +26,15 @@ exports.createArticle = async (req, res) => {
 
 exports.getListArticles = async (req, res) => {
     try{
-        res.json("added")
+        let querySnapshot = await getData("articles");
+        let data = []
+        querySnapshot.forEach((doc) => {
+            data.push({
+                ...doc.data(),
+                id: doc.id
+            })
+          });
+        res.json(data)
     }
     catch(err){
         console.error(err)
@@ -32,9 +43,14 @@ exports.getListArticles = async (req, res) => {
 } 
  
 
-exports.getArticle = async (req, res) => {
+exports.getArticleById = async (req, res) => {
     try{
-        res.json("added")
+        let docSnap = await getDataById("articles", req.params.id)
+        if(!docSnap.exists) return res.status(404).json("not found")
+            res.json({
+                ...docSnap.data(),
+                id: docSnap.id
+            })
     }
     catch(err){
         console.error(err)
