@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const authRouter = require('../controllers/auth.controller');
+const rapportController =  require('../controllers/rapports.controller');
 
-router.get('/login', authRouter.Login);
+router.get('/:patientId', rapportController.getListRapportsByPatients);
+
+router.post('/:patientId', rapportController.addRapportToPatient);
 
 module.exports = router;

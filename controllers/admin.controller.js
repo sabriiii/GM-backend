@@ -1,9 +1,9 @@
-const { updateData } = require("../config/firebase")
+const { updateData } = require("../config/firestore")
 
 exports.acceptDoctorRequests = async (req, res) => {
     try{
         // add verification of the doctor
-        updateData("Doctors", req.params.id, {
+        updateData("doctors", req.params.id, {
             actif: true
         })
         res.json("added")

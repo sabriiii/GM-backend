@@ -1,5 +1,5 @@
 const { getFirestore } = require("firebase/firestore");
-const { doc, setDoc, deleteDoc, getDoc, getDocs, collection } = require("firebase/firestore"); 
+const { doc, setDoc, deleteDoc, getDoc, getDocs, collection, query } = require("firebase/firestore"); 
 const { app } = require("./firebase")
 
 
@@ -18,6 +18,10 @@ exports.getDataById = (collection, Id) => {
     return getDoc(docRef)
 }
 
+exports.getDataByQuery = (col, condition) => {
+    const docRef = query(collection(database, col), condition);
+    return getDocs(docRef);
+}
 exports.getData = async (col) => {
     return getDocs(collection(database, col));
 }

@@ -1,7 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const authRouter = require('../controllers/auth.controller');
+const patientRouter = require('../controllers/patient.controller');
 
-router.get('/login', authRouter.Login);
+router.get('/', patientRouter.getListPatient);
+router.get('/:id', patientRouter.getPatient);
+router.put('/:id', patientRouter.updateProfilePatient);
+router.delete('/:id', patientRouter.deletePatient);
+
 
 module.exports = router;

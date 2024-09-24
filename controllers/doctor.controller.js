@@ -1,8 +1,17 @@
+const { updateData, deleteData, getData, getDataById } = require("../config/firestore");
 
 
 exports.getListDoctors = async (req, res) => {
     try{
-        res.json("added")
+        let querySnapshot = await getData("doctors");
+        let data = []
+        querySnapshot.forEach((doc) => {
+            data.push({
+                ...doc.data(),
+                id: doc.id
+            })
+          });
+        res.json(data)
     }
     catch(err){
         console.error(err)
@@ -14,7 +23,12 @@ exports.getListDoctors = async (req, res) => {
 
 exports.getDoctor = async (req, res) => {
     try{
-        res.json("added")
+        let docSnap = await getDataById("doctors", req.params.id)
+        if(!docSnap.exists) return res.status(404).json("not found")
+            res.json({
+                ...docSnap.data(),
+                id: docSnap.id
+            })
     }
     catch(err){
         console.error(err)
@@ -26,6 +40,7 @@ exports.getDoctor = async (req, res) => {
 
 exports.updateDoctorProfile = async (req, res) => {
     try{
+        updateData("doctors", req.params.id, req.body)
         res.json("added")
     }
     catch(err){
@@ -36,6 +51,7 @@ exports.updateDoctorProfile = async (req, res) => {
  
 exports.deleteDoctor = async (req, res) => {
     try{
+        deleteData("doctors", req.params.id)
         res.json("added")
     }
     catch(err){
