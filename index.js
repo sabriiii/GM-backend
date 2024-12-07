@@ -170,6 +170,117 @@ app.get("/doctor/getdoctors",async (req,res)=>{
     res.json(documentsArray);
 
 })
+
+app.post('/patient/login', async(req, res) => {
+  const receivedData = req.body;
+  try {
+    // Reference the `patients` collection
+    const patientsCollection = db.collection('patient');
+
+    // Query for the document with the matching email and password
+    const querySnapshot = await patientsCollection
+      .where('email', '==', receivedData.email)
+      .where('password', '==', receivedData.password) // Only if storing plaintext passwords
+      .get();
+
+    if (querySnapshot.empty) {
+      const doctorCollection = db.collection('doctor');
+      const doctorSnapshot = await doctorCollection
+      .where('email', '==', receivedData.email)
+      .where('password', '==', receivedData.password) // Only if storing plaintext passwords
+      .get();
+      if(doctorSnapshot.empty){
+      res.json({})
+      return;
+      }
+      const doctor = doctorSnapshot.docs[0].data();
+      doctor.id = doctorSnapshot.docs[0].id;
+      doctor.type = "doctor"
+      res.json(doctor);
+      return;
+    }
+    // Extract the first matching document (assuming unique emails)
+    const patient = querySnapshot.docs[0].data();
+    patient.id = querySnapshot.docs[0].id;
+    patient.type = "patient"
+    res.json(patient);
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+});
+app.post("/doctor/getspecificdoctors",async (req,res)=>{
+  try {
+  const  body  = req.body;
+  const specificdoctors = db.collection("doctor");
+  const snapshot = await specificdoctors
+
+  .where("governorate", "==", body.governorate)
+  .get()
+  
+  
+    
+  const specdoctors = [];
+    snapshot.forEach((doc) => {
+      let doctor = doc.data();
+      doctor.id = doc.id; // Attach the document ID
+      specdoctors.push(doctor);
+    });
+    res.json(specdoctors);
+  }
+    catch(error){
+      console.error("Error fetching doctors:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+
+})
+app.post("/doctor/filterdoctors",async (req,res)=>{
+  try {
+  const  body  = req.body;
+  const specificdoctors = db.collection("doctor");
+  let snapshot;
+  if(body.governorate==""){
+     snapshot = await specificdoctors
+  .get()
+  }
+  else{
+     snapshot = await specificdoctors
+  .where("governorate", "==", body.governorate)
+  .get()
+  }
+  const specdoctors = [];
+    snapshot.forEach((doc) => {
+      const doctor = doc.data();
+      let fullName = `${doctor.name} ${doctor.surname}`.toLowerCase();
+      if(!fullName.includes(body.doctorName)){
+        return;
+      }
+      if(body.speciality!="" && body.speciality!=doctor.speciality){
+        return;
+      }
+      doctor.id = doc.id; // Attach the document ID
+      specdoctors.push(doctor);
+    });
+    res.json(specdoctors);
+  }
+    catch(error){
+      console.error("Error fetching doctors:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+
+})
+
+
+
+
+
+
+
+
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
